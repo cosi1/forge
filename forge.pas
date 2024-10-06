@@ -162,7 +162,9 @@ begin
                 'CLS' : writecode(#$4e);
                 'CR' : writecode(#$73);
                 'DAY' : writecode(#$8c);
-                'DUP' : writecode(#$22+#00+#$a5+#$9c+#$9c); { push $a5, peekw, peekw }
+                'DUP' : writecode(
+                    #$22+#00+#$a5+ { push $a5 }
+                    #$9c+#$9c); { peekw, peekw }
                 'EMIT' : writecode(#$b8+#$71);
                 'ERR' : writecode(#$8e);
                 'DROP' : writecode(#$83);
@@ -178,6 +180,13 @@ begin
                 'PRINT' : writecode(#$71); { print string }
                 'PRINT,' : writecode(#$72);
                 'STOP' : writecode(#$59);
+                'SWAP' : writecode(
+                    #$89+#$de+#$a5+ { asm: ldx $a5 }
+                    #$ec+#$00+#$dd+#$4b+ { ldd #0,X, std $4b }
+                    #$ec+#$02+#$ed+#$00+ { ldd #2,X, std #0,X }
+                    #$dc+#$4b+#$ed+#$02+ { ldd $4b, std #2,X }
+                    #$dc+#$a9+#$c3+#$00+#$16+#$dd+#$a9+#$39); { rta_pc += $18 }
+                'USR' : writecode(#$9f);
                 else begin
                     if not parsevalue(token) then begin
                         error := 1;
